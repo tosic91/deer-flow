@@ -40,9 +40,8 @@ WORKDIR /app
 # Copy frontend source code
 COPY backend ./backend
 
-# Install dependencies with cache mount
-RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv \
-    sh -c "cd backend && uv sync"
+# Install dependencies
+RUN cd backend && uv sync
 
 # Expose ports (gateway: 8001, langgraph: 2024)
 EXPOSE 8001 2024
