@@ -1,0 +1,121 @@
+# MH OS DeerFlow Configuration
+# Configured for OpenRouter as LLM gateway
+
+config_version: 3
+
+log_level: info
+
+token_usage:
+  enabled: true
+
+# ── Models via OpenRouter ──
+models:
+  - name: gemini-flash-lite
+    display_name: Gemini 2.5 Flash Lite (OpenRouter)
+    use: langchain_openai:ChatOpenAI
+    model: google/gemini-2.5-flash-lite
+    api_key: $OPENROUTER_API_KEY
+    base_url: https://openrouter.ai/api/v1
+    max_tokens: 8192
+    temperature: 0.7
+
+  - name: gemini-pro
+    display_name: Gemini 2.5 Pro (OpenRouter)
+    use: langchain_openai:ChatOpenAI
+    model: google/gemini-2.5-pro
+    api_key: $OPENROUTER_API_KEY
+    base_url: https://openrouter.ai/api/v1
+    max_tokens: 16384
+    temperature: 0.7
+
+  - name: deepseek-v3
+    display_name: DeepSeek V3 (OpenRouter)
+    use: langchain_openai:ChatOpenAI
+    model: deepseek/deepseek-chat-v3-0324
+    api_key: $OPENROUTER_API_KEY
+    base_url: https://openrouter.ai/api/v1
+    max_tokens: 8192
+    temperature: 0.7
+
+# ── Tools ──
+tool_groups:
+  - name: web
+  - name: file:read
+  - name: file:write
+  - name: bash
+
+tools:
+  - name: web_search
+    group: web
+    use: deerflow.community.tavily.tools:web_search_tool
+    max_results: 5
+
+  - name: web_fetch
+    group: web
+    use: deerflow.community.jina_ai.tools:web_fetch_tool
+    timeout: 10
+
+  - name: image_search
+    group: web
+    use: deerflow.community.image_search.tools:image_search_tool
+    max_results: 5
+
+  - name: ls
+    group: file:read
+    use: deerflow.sandbox.tools:ls_tool
+
+  - name: read_file
+    group: file:read
+    use: deerflow.sandbox.tools:read_file_tool
+
+  - name: write_file
+    group: file:write
+    use: deerflow.sandbox.tools:write_file_tool
+
+  - name: bash
+    group: bash
+    use: deerflow.sandbox.tools:bash_tool
+
+# ── Sandbox (Local) ──
+sandbox:
+  use: deerflow.sandbox.local:LocalSandboxProvider
+
+# ── Skills ──
+skills:
+  container_path: /mnt/skills
+
+# ── Title ──
+title:
+  enabled: true
+  max_words: 6
+  max_chars: 60
+  model_name: null
+
+# ── Summarization ──
+summarization:
+  enabled: true
+  model_name: null
+  trigger:
+    - type: tokens
+      value: 15564
+  keep:
+    type: messages
+    value: 10
+  trim_tokens_to_summarize: 15564
+  summary_prompt: null
+
+# ── Memory ──
+memory:
+  enabled: true
+  storage_path: memory.json
+  debounce_seconds: 30
+  model_name: null
+  max_facts: 100
+  fact_confidence_threshold: 0.7
+  injection_enabled: true
+  max_injection_tokens: 2000
+
+# ── State Persistence ──
+checkpointer:
+  type: sqlite
+  connection_string: checkpoints.db
