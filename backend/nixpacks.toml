@@ -1,0 +1,14 @@
+# Railway Nixpacks Configuration for DeerFlow Backend
+# Guides Nixpacks on how to build this Python/uv project
+
+[phases.setup]
+nixPkgs = ["python312", "gcc"]
+
+[phases.install]
+cmds = [
+    "pip install uv",
+    "uv sync"
+]
+
+[start]
+cmd = "PYTHONPATH=. uv run uvicorn app.gateway.app:app --host 0.0.0.0 --port ${PORT:-8001}"
